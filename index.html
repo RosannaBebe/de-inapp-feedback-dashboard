@@ -11,7 +11,7 @@
 .note{background:#eef5ff;border:1px solid #d7e7ff;border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;color:#34415a}
 .section{margin:26px 0;scroll-margin-top:132px}.section-title{display:flex;align-items:center;gap:9px;margin-bottom:12px}.section-title:before{content:"";width:4px;height:19px;border-radius:3px;background:var(--blue)}.section-title h2{font-size:17px;margin:0}.section-sub{font-size:12px;color:var(--muted);margin:-5px 0 14px 13px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}.card-title{font-size:13px;font-weight:650;margin-bottom:13px}.grid{display:grid;gap:14px}.grid-2{grid-template-columns:1.35fr 1fr}.grid-even{grid-template-columns:repeat(2,1fr)}.tax-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-.tax-card{border-left:4px solid var(--blue)}.tax-head{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:11px}.count{margin-left:auto;color:var(--muted);background:#f0f2f5;border-radius:999px;padding:2px 8px;font-size:11px}.chips{display:flex;flex-wrap:wrap;gap:6px}.chip,.tab{border:1px solid var(--border);background:#fff;border-radius:999px;padding:5px 9px;font-size:11px;color:#3c4658}.chip:hover{border-color:var(--blue);color:var(--blue)}.toolbar{position:sticky;top:8px;z-index:30;background:rgba(255,255,255,.96);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;margin:20px 0}.toolbar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.toolbar-row+.toolbar-row{margin-top:7px;padding-top:7px;border-top:1px solid var(--border)}.toolbar-label{font-size:11px;color:var(--muted);font-weight:700;margin-right:2px;min-width:52px}.tab{cursor:pointer;padding:6px 11px}.tab.active{color:#fff;background:var(--blue);border-color:var(--blue)}.tab.resolved.active{background:var(--green);border-color:var(--green)}.filter-select{border:1px solid var(--border);border-radius:8px;padding:6px 10px;background:#fff;font-size:12px;color:var(--text);min-width:132px;max-width:240px}.browse-count{font-size:12px;color:var(--muted);margin-left:4px}.chip{cursor:pointer}
+.tax-card{border-left:4px solid var(--blue)}.tax-head{display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:11px}.count{margin-left:auto;color:var(--muted);background:#f0f2f5;border-radius:999px;padding:2px 8px;font-size:11px}.chips{display:flex;flex-wrap:wrap;gap:6px}.chip,.tab{border:1px solid var(--border);background:#fff;border-radius:999px;padding:5px 9px;font-size:11px;color:#3c4658}.chip:hover{border-color:var(--blue);color:var(--blue)}.toolbar{position:sticky;top:8px;z-index:30;background:rgba(255,255,255,.96);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;margin:0 0 20px}.toolbar.filters{background:#eef5ff;border-color:#c5dbff;margin:0 0 16px}.toolbar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.toolbar-row+.toolbar-row{margin-top:7px;padding-top:7px;border-top:1px solid var(--border)}.toolbar-label{font-size:11px;color:var(--muted);font-weight:700;margin-right:2px;min-width:52px}.tab{cursor:pointer;padding:6px 11px}.tab.active{color:#fff;background:var(--blue);border-color:var(--blue)}.tab.resolved.active{background:var(--green);border-color:var(--green)}.filter-select{border:1px solid var(--border);border-radius:8px;padding:6px 10px;background:#fff;font-size:12px;color:var(--text);min-width:132px;max-width:240px}.browse-count{font-size:12px;color:var(--muted);margin-left:4px}.chip{cursor:pointer}
 .tax-card:hover{position:relative;z-index:20}.tooltip{position:relative;cursor:help}.tooltip:after{content:attr(data-tooltip);position:absolute;z-index:100;bottom:calc(100% + 8px);left:50%;width:300px;padding:9px 11px;border:1px solid var(--border);border-radius:8px;background:#1f2937;color:#fff;font-size:12px;font-weight:400;line-height:1.55;white-space:normal;pointer-events:none;opacity:0;visibility:hidden;transform:translate(-50%,4px);transition:opacity .12s,transform .12s}.tooltip:hover:after{opacity:1;visibility:visible;transform:translate(-50%,0)}
 .kpis{grid-template-columns:repeat(5,1fr)}.overall-kpis{grid-template-columns:repeat(4,1fr)}.kpi{background:#fff;border:1px solid var(--border);border-top:3px solid var(--blue);border-radius:var(--radius);padding:15px 16px;min-height:102px}.kpi.red{border-top-color:var(--red)}.kpi.red2{border-top-color:var(--red2)}.kpi.orange{border-top-color:var(--orange)}.kpi.gray{border-top-color:var(--gray)}.kpi-label{font-size:11px;color:var(--muted)}.kpi-value{font-size:24px;font-weight:750;margin:7px 0 4px}.kpi-sub{font-size:11px;color:var(--muted)}
 .priority-guide{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.guide-label{font-weight:700;margin-bottom:4px}.guide-text{font-size:12px;color:var(--muted);line-height:1.55}.analysis{background:#eef5ff;border:1px solid #d7e7ff;border-radius:var(--radius);padding:15px 17px;line-height:1.65}.analysis p{margin:5px 0}
@@ -32,17 +32,21 @@ table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(
     <div><h1>端内体验反馈看板</h1><div class="subtitle">基于 Lark 完整底表 <span id="totalRecords"></span> 条记录 · 覆盖问题结构、优先级、反馈渠道、解决进展与行动建议</div></div>
     <div class="meta"><strong>数据更新至 <span id="updatedAt"></span></strong><br>数据源：反馈跟踪记录完整底表</div>
   </header>
+  <div class="toolbar filters">
+    <div class="toolbar-row"><span class="toolbar-label">周次</span><select class="filter-select" id="weekSelect"></select>
+      <span class="toolbar-label">看什么</span><div id="browseModeTabs"></div>
+      <span class="toolbar-label">一级分类</span><select class="filter-select" id="catSelect"></select>
+      <span class="toolbar-label">二级分类</span><select class="filter-select" id="secSelect"></select>
+      <span class="browse-count" id="browseCount"></span></div>
+    <div class="toolbar-row"><span class="toolbar-label">统计范围</span><div id="scopeTabs"></div></div>
+    <div class="toolbar-row"><span class="toolbar-label">页面导航</span><div id="sectionTabs"></div></div>
+  </div>
+  <div id="browseTable" class="card" style="margin-bottom:20px"></div>
   <section class="section">
     <div class="section-title"><h2>问题分类体系</h2></div>
     <div class="toolbar-row taxonomy-tabs" id="taxonomyTabs"></div>
     <div class="grid tax-grid" id="taxonomy"></div>
   </section>
-
-  <div class="toolbar">
-    <div class="toolbar-row"><span class="toolbar-label">统计范围</span><div id="scopeTabs"></div></div>
-    <div class="toolbar-row"><span class="toolbar-label">页面导航</span><div id="sectionTabs"></div></div>
-    <div class="toolbar-row"><span class="toolbar-label">按周筛选</span><div id="browseToolbar"></div></div>
-  </div>
   <div id="dashboard"></div>
   <footer class="footer" id="footer"></footer>
 </main>
@@ -125,7 +129,7 @@ function renderTaxonomy(){
       browseSec=el.dataset.browseSec||"全部";
       renderBrowseToolbar();
       renderBrowseTable();
-      document.getElementById("section-weekly-browse")?.scrollIntoView({behavior:"smooth",block:"start"});
+      document.getElementById("browseTable")?.scrollIntoView({behavior:"smooth",block:"start"});
     });
   });
 }
@@ -188,25 +192,25 @@ function renderBrowseToolbar(){
   const afterCat=browseCat==="全部"?modeRows:modeRows.filter(item=>item.category===browseCat);
   const secondaries=uniqueSorted(afterCat.map(item=>item.secondary));
   if(browseSec!=="全部"&&!secondaries.includes(browseSec))browseSec="全部";
-  const weekOptions=[
+  const weekSelect=document.getElementById("weekSelect");
+  const catSelect=document.getElementById("catSelect");
+  const secSelect=document.getElementById("secSelect");
+  if(!weekSelect||!catSelect||!secSelect)return;
+  weekSelect.innerHTML=[
     optionHtml(LAST_WEEK,`本周（${LAST_WEEK}）`,browseWeek),
     ...WEEK_LABELS.filter(label=>label!==LAST_WEEK).slice().reverse().map(label=>optionHtml(label,label,browseWeek)),
     optionHtml("6/28前","6/28 前创建",browseWeek),
     optionHtml("全部周次","全部周次",browseWeek)
   ].join("");
-  const catOptions=[optionHtml("全部","全部一级分类",browseCat),...categories.map(name=>optionHtml(name,name,browseCat))].join("");
-  const secOptions=[optionHtml("全部","全部二级分类",browseSec),...secondaries.map(name=>optionHtml(name,name,browseSec))].join("");
-  const listCount=currentBrowseRows().length;
-  document.getElementById("browseToolbar").innerHTML=`
-    <select class="filter-select" id="weekSelect">${weekOptions}</select>
+  catSelect.innerHTML=[optionHtml("全部","全部一级分类",browseCat),...categories.map(name=>optionHtml(name,name,browseCat))].join("");
+  secSelect.innerHTML=[optionHtml("全部","全部二级分类",browseSec),...secondaries.map(name=>optionHtml(name,name,browseSec))].join("");
+  document.getElementById("browseModeTabs").innerHTML=`
     <button class="tab ${browseMode==="created"?"active":""}" data-browse-mode="created">周新增 · ${created}</button>
-    <button class="tab resolved ${browseMode==="resolved"?"active":""}" data-browse-mode="resolved">周解决 · ${resolved}</button>
-    <select class="filter-select" id="catSelect">${catOptions}</select>
-    <select class="filter-select" id="secSelect">${secOptions}</select>
-    <span class="browse-count">当前列表 ${listCount} 条 · 与折线同一口径，不去重</span>`;
-  document.getElementById("weekSelect").onchange=e=>{browseWeek=e.target.value;renderBrowseToolbar();renderBrowseTable()};
-  document.getElementById("catSelect").onchange=e=>{browseCat=e.target.value;browseSec="全部";renderBrowseToolbar();renderBrowseTable()};
-  document.getElementById("secSelect").onchange=e=>{browseSec=e.target.value;renderBrowseToolbar();renderBrowseTable()};
+    <button class="tab resolved ${browseMode==="resolved"?"active":""}" data-browse-mode="resolved">周解决 · ${resolved}</button>`;
+  document.getElementById("browseCount").textContent=`当前列表 ${currentBrowseRows().length} 条 · 与折线同一口径，不去重`;
+  weekSelect.onchange=e=>{browseWeek=e.target.value;renderBrowseToolbar();renderBrowseTable()};
+  catSelect.onchange=e=>{browseCat=e.target.value;browseSec="全部";renderBrowseToolbar();renderBrowseTable()};
+  secSelect.onchange=e=>{browseSec=e.target.value;renderBrowseToolbar();renderBrowseTable()};
   document.querySelectorAll("[data-browse-mode]").forEach(btn=>{
     btn.onclick=()=>{browseMode=btn.dataset.browseMode;renderBrowseToolbar();renderBrowseTable()};
   });
@@ -242,7 +246,7 @@ function bindWeeklyClicks(){
       browseWeek=node.dataset.week;
       renderBrowseToolbar();
       renderBrowseTable();
-      document.getElementById("section-weekly-browse")?.scrollIntoView({behavior:"smooth",block:"start"});
+      document.getElementById("browseTable")?.scrollIntoView({behavior:"smooth",block:"start"});
     });
   });
 }
@@ -369,7 +373,7 @@ function renderDashboard(){
       <div style="margin-top:14px">${table(["一级分类","条数","占比","高优占比","已解决率","未解决"],categoryRows)}</div>
     </section>
     <section class="section" id="section-weekly-browse"><div class="section-title"><h2>按周筛选</h2></div>
-      <div class="card"><div class="card-title">本周新增 / 已解决明细</div><div id="browseTable"></div></div>
+      <div class="muted">筛选项和明细表在页面最上方，可按周次、周新增 / 周解决、一级和二级分类查看。</div>
     </section>
     <section class="section" id="section-resolution"><div class="section-title"><h2>各类问题解决情况</h2></div>
       <div class="status-grid"><div class="card"><div class="card-title">${scope} · 进展状态占比</div>${donut(d.overall_status,d.total_valid)}</div><div>${table(["一级分类","总量","已解决","解决率","处理中","需求池","待分析","未解决"],resolutionRows)}</div></div>
@@ -384,7 +388,7 @@ function renderDashboard(){
 }
 document.getElementById("updatedAt").textContent=DATA.updatedAt;
 document.getElementById("totalRecords").textContent=DATA.total;
-renderTaxonomy();renderTabs();renderSectionTabs();renderDashboard();bindSectionObserver();
+renderBrowseToolbar();renderBrowseTable();renderTaxonomy();renderTabs();renderSectionTabs();renderDashboard();bindSectionObserver();
 </script>
 </body>
 </html>

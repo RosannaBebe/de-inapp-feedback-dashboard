@@ -252,6 +252,7 @@ function bindWeeklyClicks(){
   document.querySelectorAll("[data-week]").forEach(node=>{
     node.addEventListener("click",()=>{
       browseWeek=node.dataset.week;
+      browseOpen=true;
       renderBrowseToolbar();
       renderBrowseTable();
       document.getElementById("browseTable")?.scrollIntoView({behavior:"smooth",block:"start"});
@@ -371,7 +372,7 @@ function renderDashboard(){
       <p><b>当前进展：</b>已解决 ${d.resolved} 条，其中高优解决 ${d.high_resolved} 条；高优剩余 ${d.high_unresolved} / ${d.high_pri}。未解决 ${unresolvedTotal} 条中，P1 / P2 共 ${remainingP1P2} 条（P1 ${remainingP1}、P2 ${remainingP2}）。</p>
       <p><b>后续动作：</b>优先闭环体验课高优问题，需求池与排期项按影响完课和转化的路径推进。</p>`
   }[scope];
-  const priorityOverviewHtml=`<div class="grid kpis">${kpi("反馈总数",d.total_valid,unclassified?`其中 ${unclassified} 条未标一级`:(scope==="全量（去重）"?`由 ${DATA.total} 条完整反馈去重`:scope==="课中（去重）"?`由 ${DATA.dedupMeta.raw} 条反馈去重`:scope==="课外（去重）"?`由 ${DATA.offclassDedupMeta.raw} 条课外反馈去重`:scope==="体验课看板"?"Lark「体验课问题反馈看板」· 课程类型=体验课":"完整统计口径")})}${kpi("P0++",pri[0].count,`占总量 ${pct(pri[0].count,d.total_valid)} · 已解决 ${pri[0].resolved} 条 · 解决率 ${pct(pri[0].resolved,pri[0].count)}`,"red")}${kpi("P0",pri[1].count,`占总量 ${pct(pri[1].count,d.total_valid)} · 已解决 ${pri[1].resolved} 条 · 解决率 ${pct(pri[1].resolved,pri[1].count)}`,"red2")}${kpi("P1",pri[2].count,`占总量 ${pct(pri[2].count,d.total_valid)} · 已解决 ${pri[2].resolved} 条 · 解决率 ${pct(pri[2].resolved,pri[2].count)}`,"orange")}${kpi("P2",pri[3].count,`占总量 ${pct(pri[3].count,d.total_valid)} · 已解决 ${pri[3].resolved} 条 · 解决率 ${pct(pri[3].resolved,pri[3].count)}`,"gray")}</div>
+  const priorityOverviewHtml=`<div class="grid kpis">${kpi("反馈总数",d.total_valid,unclassified?`其中 ${unclassified} 条未标一级`:(scope==="全量（去重）"?`由 ${DATA.total} 条完整反馈去重`:scope==="课中（去重）"?`由 ${DATA.dedupMeta.raw} 条反馈去重`:scope==="课外（去重）"?`由 ${DATA.offclassDedupMeta.raw} 条课外反馈去重`:scope==="体验课看板"?"Lark「体验课问题反馈看板」· 课程类型=体验课":"完整统计口径"))}${kpi("P0++",pri[0].count,`占总量 ${pct(pri[0].count,d.total_valid)} · 已解决 ${pri[0].resolved} 条 · 解决率 ${pct(pri[0].resolved,pri[0].count)}`,"red")}${kpi("P0",pri[1].count,`占总量 ${pct(pri[1].count,d.total_valid)} · 已解决 ${pri[1].resolved} 条 · 解决率 ${pct(pri[1].resolved,pri[1].count)}`,"red2")}${kpi("P1",pri[2].count,`占总量 ${pct(pri[2].count,d.total_valid)} · 已解决 ${pri[2].resolved} 条 · 解决率 ${pct(pri[2].resolved,pri[2].count)}`,"orange")}${kpi("P2",pri[3].count,`占总量 ${pct(pri[3].count,d.total_valid)} · 已解决 ${pri[3].resolved} 条 · 解决率 ${pct(pri[3].resolved,pri[3].count)}`,"gray")}</div>
     <div class="card" style="margin-top:12px"><div class="card-title">优先级口径说明</div><div class="priority-guide"><div><div class="guide-label">P0++（阻断）</div><div class="guide-text">课堂无法推进、流程卡死、大面积不可用，或核心业务被直接阻断。</div></div><div><div class="guide-label">P0（高优）</div><div class="guide-text">显著影响注册、完课、支付转化，或体验课学习效果与关键学习体验。</div></div><div><div class="guide-label">P1</div><div class="guide-text">体验明显受损但仍可完成主流程，需纳入近期迭代。</div></div><div><div class="guide-label">P2</div><div class="guide-text">不阻断主流程的体验优化项，可按版本节奏排期。</div></div></div></div>`;
   document.getElementById("dashboard").innerHTML=`
     <section class="section" id="section-overall"><div class="section-title"><h2>整体情况</h2></div>

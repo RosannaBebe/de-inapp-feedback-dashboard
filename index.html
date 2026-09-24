@@ -21,6 +21,7 @@ table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(
 .detail-group{background:#fff;border:1px solid var(--border);border-radius:10px;margin:9px 0;overflow:hidden}.detail-group summary{cursor:pointer;padding:11px 13px;font-weight:650}.detail-group[open] summary{border-bottom:1px solid var(--border)}.detail-group .wide{padding:12px}
 .status-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:14px}.weekly svg{width:100%;height:auto;overflow:visible}.axis{font-size:10px;fill:#7b8494}.line-created{fill:none;stroke:var(--blue);stroke-width:3}.line-resolved{fill:none;stroke:var(--green);stroke-width:3}.line-dot-created{fill:var(--blue)}.line-dot-resolved{fill:var(--green)}.weekly-hover>rect{cursor:crosshair}.weekly-tooltip{opacity:0;pointer-events:none;transition:opacity .12s ease}.weekly-hover:hover .weekly-tooltip,.weekly-hover:focus .weekly-tooltip{opacity:1}.weekly-tooltip rect{fill:#182033;stroke:#fff;stroke-width:1;rx:7}.weekly-tooltip text{fill:#fff;font-size:11px}.line-legend{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:8px}.line-key{display:inline-block;width:18px;height:3px;margin-right:6px;vertical-align:middle}
 .browse-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}.browse-head .section-sub{margin:0}.toggle-btn{border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-weight:650;color:var(--text);white-space:nowrap}.toggle-btn:hover{border-color:var(--blue);color:var(--blue)}
+.cat-week{margin:0 0 16px}.cat-week-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}.cat-week-title{font-size:13px;font-weight:650}.cat-week-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}.cat-week-card{border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;background:#fff;text-align:left}.cat-week-card:hover{border-color:var(--blue)}.cat-week-card.active{border-color:var(--blue);background:#eef5ff}.cat-week-name{font-size:12px;font-weight:650;line-height:1.4;margin-bottom:8px}.cat-week-nums{display:flex;gap:16px;font-size:12px;color:var(--muted)}.cat-week-nums b{font-size:16px;font-weight:750;margin-right:4px}.cat-week-nums .created b{color:var(--blue)}.cat-week-nums .resolved b{color:var(--green)}
 .footer{border-top:1px solid var(--border);padding-top:14px;color:var(--muted);font-size:11px;margin-top:28px}.hidden{display:none}
 @media(max-width:980px){.tax-grid,.kpis,.overall-kpis{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-even,.status-grid{grid-template-columns:1fr}.priority-guide{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.page{padding:14px}.header{display:block}.meta{text-align:left;margin-top:10px}.tax-grid,.kpis,.overall-kpis,.priority-guide{grid-template-columns:1fr}.bar-row{grid-template-columns:90px 1fr 40px}}
@@ -42,6 +43,7 @@ table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(
     <div class="toolbar-row"><span class="toolbar-label">统计范围</span><div id="scopeTabs"></div></div>
     <div class="toolbar-row"><span class="toolbar-label">页面导航</span><div id="sectionTabs"></div></div>
   </div>
+  <div id="categoryWeekStats" class="card cat-week"></div>
   <div id="browseTable" class="card" style="margin-bottom:20px"></div>
   <section class="section">
     <div class="section-title"><h2>问题分类体系</h2></div>
@@ -130,8 +132,7 @@ function renderTaxonomy(){
       browseCat=el.dataset.browseCat||"全部";
       browseSec=el.dataset.browseSec||"全部";
       browseOpen=true;
-      renderBrowseToolbar();
-      renderBrowseTable();
+      refreshBrowse();
       document.getElementById("browseTable")?.scrollIntoView({behavior:"smooth",block:"start"});
     });
   });
@@ -181,6 +182,21 @@ function currentBrowseRows(){
   const afterCat=browseCat==="全部"?base:base.filter(item=>item.category===browseCat);
   return browseSec==="全部"?afterCat:afterCat.filter(item=>item.secondary===browseSec);
 }
+function categoryWeekStats(){
+  const created=weekCreatedItems(browseWeek);
+  const resolved=weekResolvedItems(browseWeek);
+  const names=uniqueSorted([...created,...resolved].map(item=>item.category));
+  return names.map(name=>({
+    category:name,
+    created:created.filter(item=>item.category===name).length,
+    resolved:resolved.filter(item=>item.category===name).length
+  })).sort((a,b)=>b.created-a.created||b.resolved-a.resolved||a.category.localeCompare(b.category,"zh"));
+}
+function refreshBrowse(){
+  renderBrowseToolbar();
+  renderCategoryWeekStats();
+  renderBrowseTable();
+}
 function uniqueSorted(values){
   return [...new Set(values)].sort((a,b)=>a.localeCompare(b,"zh"));
 }
@@ -191,7 +207,10 @@ function renderBrowseToolbar(){
   const created=weekCreatedItems(browseWeek).length;
   const resolved=weekResolvedItems(browseWeek).length;
   const modeRows=browseMode==="created"?weekCreatedItems(browseWeek):weekResolvedItems(browseWeek);
-  const categories=uniqueSorted(modeRows.map(item=>item.category));
+  const categories=uniqueSorted([
+    ...weekCreatedItems(browseWeek).map(item=>item.category),
+    ...weekResolvedItems(browseWeek).map(item=>item.category)
+  ]);
   if(browseCat!=="全部"&&!categories.includes(browseCat))browseCat="全部";
   const afterCat=browseCat==="全部"?modeRows:modeRows.filter(item=>item.category===browseCat);
   const secondaries=uniqueSorted(afterCat.map(item=>item.secondary));
@@ -212,11 +231,41 @@ function renderBrowseToolbar(){
     <button class="tab ${browseMode==="created"?"active":""}" data-browse-mode="created">周新增 · ${created}</button>
     <button class="tab resolved ${browseMode==="resolved"?"active":""}" data-browse-mode="resolved">周解决 · ${resolved}</button>`;
   document.getElementById("browseCount").textContent=`当前列表 ${currentBrowseRows().length} 条 · 与折线同一口径，不去重`;
-  weekSelect.onchange=e=>{browseWeek=e.target.value;renderBrowseToolbar();renderBrowseTable()};
-  catSelect.onchange=e=>{browseCat=e.target.value;browseSec="全部";renderBrowseToolbar();renderBrowseTable()};
-  secSelect.onchange=e=>{browseSec=e.target.value;renderBrowseToolbar();renderBrowseTable()};
+  weekSelect.onchange=e=>{browseWeek=e.target.value;refreshBrowse()};
+  catSelect.onchange=e=>{browseCat=e.target.value;browseSec="全部";refreshBrowse()};
+  secSelect.onchange=e=>{browseSec=e.target.value;refreshBrowse()};
   document.querySelectorAll("[data-browse-mode]").forEach(btn=>{
-    btn.onclick=()=>{browseMode=btn.dataset.browseMode;renderBrowseToolbar();renderBrowseTable()};
+    btn.onclick=()=>{browseMode=btn.dataset.browseMode;refreshBrowse()};
+  });
+}
+function renderCategoryWeekStats(){
+  const host=document.getElementById("categoryWeekStats");
+  if(!host)return;
+  const stats=categoryWeekStats();
+  const createdTotal=weekCreatedItems(browseWeek).length;
+  const resolvedTotal=weekResolvedItems(browseWeek).length;
+  const weekText=browseWeek==="全部周次"?"全部已填时间":browseWeek==="6/28前"?"6/28 前创建":`周次 ${browseWeek}`;
+  if(!stats.length){
+    host.innerHTML=`<div class="cat-week-head"><div class="cat-week-title">一级分类 · 新增 / 解决</div><div class="muted">${esc(scope)} · ${esc(weekText)} · 新增 0 · 解决 0</div></div><div class="muted">当前周次没有新增或解决记录。</div>`;
+    return;
+  }
+  host.innerHTML=`
+    <div class="cat-week-head">
+      <div class="cat-week-title">一级分类 · 新增 / 解决</div>
+      <div class="muted">${esc(scope)} · ${esc(weekText)} · 新增 ${createdTotal} · 解决 ${resolvedTotal} · 点击分类可筛选下方列表</div>
+    </div>
+    <div class="cat-week-grid">${stats.map(item=>`
+      <button type="button" class="cat-week-card ${browseCat===item.category?"active":""}" data-cat-week="${esc(item.category)}">
+        <div class="cat-week-name">${esc(item.category)}</div>
+        <div class="cat-week-nums"><span class="created"><b>${item.created}</b>新增</span><span class="resolved"><b>${item.resolved}</b>解决</span></div>
+      </button>`).join("")}</div>`;
+  host.querySelectorAll("[data-cat-week]").forEach(btn=>{
+    btn.onclick=()=>{
+      browseCat=browseCat===btn.dataset.catWeek?"全部":btn.dataset.catWeek;
+      browseSec="全部";
+      browseOpen=true;
+      refreshBrowse();
+    };
   });
 }
 function renderBrowseTable(){
@@ -252,8 +301,7 @@ function bindWeeklyClicks(){
     node.addEventListener("click",()=>{
       browseWeek=node.dataset.week;
       browseOpen=true;
-      renderBrowseToolbar();
-      renderBrowseTable();
+      refreshBrowse();
       document.getElementById("browseTable")?.scrollIntoView({behavior:"smooth",block:"start"});
     });
   });
@@ -404,13 +452,12 @@ function renderDashboard(){
     <section class="section" id="section-actions"><div class="section-title"><h2>如何解决</h2></div><div class="analysis" style="margin-bottom:14px"><b>专项与非专项采用双轨治理：</b>专项问题 ${d.special_unresolved} 条按专项里程碑推进，其中TTS / ASR badcase进入模型训练、回归评测与持续验证；系统稳定性问题按入课、加载、播放、状态机、弱网与崩溃根因专项修复；非专项问题 ${d.non_special_unresolved} 条按版本明确Owner、目标时间和验收标准。</div>${table(["一级分类","未解决","专项未解决","高优问题个数","主责方","处理路径（每一类处理路径重点均为：数据验证）"],actionRows,1,"center")}${specialActionCard}</section>
     <section class="section" id="section-appendix"><div class="section-title"><h2>附录</h2></div>${priorityDetailTables(scope)}${unresolvedByCategoryTables(scope)}<div class="section-sub" style="margin-top:14px">${scope} · 各一级分类优先级与进展分布</div>${table(["一级分类","总量","优先级分布","进展分布"],appendixRows,1)}</section>`;
   document.getElementById("footer").textContent=`数据：Lark「反馈跟踪记录」完整底表 ${DATA.total} 条 · 当前 ${scope} · 总量 ${d.total_valid} · 已解决 ${d.resolved} · 待分析 ${d.empty_status}`;
-  renderBrowseToolbar();
-  renderBrowseTable();
+  refreshBrowse();
   bindWeeklyClicks();
 }
 document.getElementById("updatedAt").textContent=DATA.updatedAt;
 document.getElementById("totalRecords").textContent=DATA.total;
-renderBrowseToolbar();renderBrowseTable();renderTaxonomy();renderTabs();renderSectionTabs();renderDashboard();bindSectionObserver();
+refreshBrowse();renderTaxonomy();renderTabs();renderSectionTabs();renderDashboard();bindSectionObserver();
 </script>
 </body>
 </html>

@@ -233,7 +233,6 @@ function renderBrowseTable(){
   const resolved=weekResolvedItems(browseWeek).length;
   const weekText=browseWeek==="全部周次"?"全部已填时间的记录":browseWeek==="6/28前"?"6/28 前创建、未计入折线":`与折线「${browseWeek}」同一周`;
   const modeLabel=browseMode==="created"?"周新增":"周解决";
-  const dateHeader=browseMode==="created"?"创建日期":"解决日期";
   const emptyHint=browseWeek===LAST_WEEK&&created===0&&browseMode==="created"
     ?`<div class="muted" style="margin-bottom:8px">本周暂无新增。上一周「${WEEK_LABELS[WEEK_LABELS.length-2]||""}」可在顶部周次里切换查看。</div>`:"";
   host.innerHTML=`
@@ -242,9 +241,9 @@ function renderBrowseTable(){
       <button type="button" class="toggle-btn" id="browseToggle">${browseOpen?"【收起】":"【展开】"}</button>
     </div>
     ${emptyHint}
-    <div id="browseBody" class="${browseOpen?"":"hidden"}">${rows.length?table(["优先级","进展","一级分类","二级分类","负责人",dateHeader,"问题描述"],rows.map(item=>[
+    <div id="browseBody" class="${browseOpen?"":"hidden"}">${rows.length?table(["优先级","进展","一级分类","二级分类","负责人","创建日期","解决时间","问题描述"],rows.map(item=>[
       esc(item.priority),esc(item.status),esc(item.category),esc(item.secondary),esc(item.owner),
-      esc(browseMode==="created"?item.created||"—":item.resolved||"—"),esc(item.description)
+      esc(item.created||"—"),esc(item.resolved||"—"),esc(item.description)
     ]),99):`<div class="muted">当前筛选没有匹配记录。可换一周、改成「周解决」，或清空分类。</div>`}</div>`;
   document.getElementById("browseToggle").onclick=()=>{browseOpen=!browseOpen;renderBrowseTable()};
 }

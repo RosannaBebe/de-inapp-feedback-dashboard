@@ -17,7 +17,7 @@
 .priority-guide{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.guide-label{font-weight:700;margin-bottom:4px}.guide-text{font-size:12px;color:var(--muted);line-height:1.55}.analysis{background:#eef5ff;border:1px solid #d7e7ff;border-radius:var(--radius);padding:15px 17px;line-height:1.65}.analysis p{margin:5px 0}
 .bar-row{display:grid;grid-template-columns:120px 1fr 48px;align-items:center;gap:9px;margin:10px 0}.bar-track{height:11px;background:#eef1f5;border-radius:999px;overflow:hidden}.bar-fill{height:100%;background:var(--blue);border-radius:999px}.bar-name{font-size:12px}.bar-value{text-align:right;font-size:12px;font-weight:650}
 .donut-wrap{display:flex;gap:24px;align-items:center;justify-content:center}.donut{width:174px;height:174px;border-radius:50%;position:relative;flex:none}.donut:after{content:"";position:absolute;inset:34px;background:#fff;border-radius:50%}.legend{min-width:190px}.legend-row{display:grid;grid-template-columns:10px 1fr auto;gap:8px;align-items:center;margin:8px 0;font-size:12px}.dot{width:9px;height:9px;border-radius:50%}
-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;font-size:12px}th{background:#f6f7f9;color:#586174;text-align:left;font-weight:650;padding:10px}td{padding:9px 10px;border-top:1px solid var(--border)}tbody tr:nth-child(even){background:#fafbfc}.right{text-align:right}.center{text-align:center}.wide{overflow-x:auto}
+table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;font-size:12px}th{background:#f6f7f9;color:#586174;text-align:left;font-weight:650;padding:10px}td{padding:9px 10px;border-top:1px solid var(--border)}th.date,td.date{white-space:nowrap;min-width:96px}td.desc{word-break:break-word}tbody tr:nth-child(even){background:#fafbfc}.right{text-align:right}.center{text-align:center}.wide{overflow-x:auto}
 .detail-group{background:#fff;border:1px solid var(--border);border-radius:10px;margin:9px 0;overflow:hidden}.detail-group summary{cursor:pointer;padding:11px 13px;font-weight:650}.detail-group[open] summary{border-bottom:1px solid var(--border)}.detail-group .wide{padding:12px}
 .status-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:14px}.weekly svg{width:100%;height:auto;overflow:visible}.axis{font-size:10px;fill:#7b8494}.line-created{fill:none;stroke:var(--blue);stroke-width:3}.line-resolved{fill:none;stroke:var(--green);stroke-width:3}.line-dot-created{fill:var(--blue)}.line-dot-resolved{fill:var(--green)}.weekly-hover>rect{cursor:crosshair}.weekly-tooltip{opacity:0;pointer-events:none;transition:opacity .12s ease}.weekly-hover:hover .weekly-tooltip,.weekly-hover:focus .weekly-tooltip{opacity:1}.weekly-tooltip rect{fill:#182033;stroke:#fff;stroke-width:1;rx:7}.weekly-tooltip text{fill:#fff;font-size:11px}.line-legend{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:8px}.line-key{display:inline-block;width:18px;height:3px;margin-right:6px;vertical-align:middle}
 .browse-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}.browse-head .section-sub{margin:0}.toggle-btn{border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-weight:650;color:var(--text);white-space:nowrap}.toggle-btn:hover{border-color:var(--blue);color:var(--blue)}
@@ -241,9 +241,9 @@ function renderBrowseTable(){
       <button type="button" class="toggle-btn" id="browseToggle">${browseOpen?"【收起】":"【展开】"}</button>
     </div>
     ${emptyHint}
-    <div id="browseBody" class="${browseOpen?"":"hidden"}">${rows.length?table(["优先级","进展","一级分类","二级分类","负责人","创建日期","解决时间","问题描述"],rows.map(item=>[
-      esc(item.priority),esc(item.status),esc(item.category),esc(item.secondary),esc(item.owner),
-      esc(item.created||"—"),esc(item.resolved||"—"),esc(item.description)
+    <div id="browseBody" class="${browseOpen?"":"hidden"}">${rows.length?table(["优先级","进展","创建日期","解决时间","一级分类","二级分类","负责人","问题描述"],rows.map(item=>[
+      esc(item.priority),esc(item.status),esc(item.created||"—"),esc(item.resolved||"—"),
+      esc(item.category),esc(item.secondary),esc(item.owner),esc(item.description)
     ]),99):`<div class="muted">当前筛选没有匹配记录。可换一周、改成「周解决」，或清空分类。</div>`}</div>`;
   document.getElementById("browseToggle").onclick=()=>{browseOpen=!browseOpen;renderBrowseTable()};
 }
@@ -284,9 +284,20 @@ function weeklyChart(w){
   }).join("");
   return `<div class="weekly"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="每周新增反馈与解决问题数量"><line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#d8dde6"/>${labels}<polyline class="line-created" points="${points(w.created)}"/><polyline class="line-resolved" points="${points(w.resolved)}"/>${dots(w.created,"line-dot-created")}${dots(w.resolved,"line-dot-resolved")}${hoverZones}</svg><div class="line-legend"><span><i class="line-key" style="background:var(--blue)"></i>周新增（创建时间）</span><span><i class="line-key" style="background:var(--green)"></i>周解决（解决时间）</span></div></div>`;
 }
+function resolvedAt(item){
+  if(item&&item.resolved)return item.resolved;
+  const row=(DATA.weekBrowse||[]).find(x=>x.id===item.id);
+  return (row&&row.resolved)||"";
+}
 function table(headers,rows,alignFrom=1,alignment="right"){
-  const alignClass=i=>i>=alignFrom?alignment:"";
-  return `<div class="wide"><table><thead><tr>${headers.map((h,i)=>`<th class="${alignClass(i)}">${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td class="${alignClass(i)}">${v}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  const colClass=(h,i)=>{
+    const bits=[];
+    if(i>=alignFrom)bits.push(alignment);
+    if(h==="创建日期"||h==="解决时间"||h==="解决日期")bits.push("date");
+    if(h==="问题描述")bits.push("desc");
+    return bits.join(" ");
+  };
+  return `<div class="wide"><table><thead><tr>${headers.map((h,i)=>`<th class="${colClass(h,i)}">${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((v,i)=>`<td class="${colClass(headers[i],i)}">${v}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 function priorityDetailTables(scopeKey){
   const details=DATA.priorityDetails[scopeKey]||[];
@@ -295,9 +306,9 @@ function priorityDetailTables(scopeKey){
     if(!items.length)return "";
     const rows=items.map(item=>[
       esc(item.id),item.source_count,esc(item.status),esc(item.category),esc(item.secondary),
-      esc(item.owner),esc(item.description)
+      esc(item.owner),esc(resolvedAt(item)||"—"),esc(item.description)
     ]);
-    return `<details class="detail-group"><summary>${esc(scopeKey)} · ${priority} 反馈问题明细（${items.length}）</summary>${table(["问题ID","合并条数","进展","一级分类","二级分类","负责人","问题描述"],rows,99)}</details>`;
+    return `<details class="detail-group"><summary>${esc(scopeKey)} · ${priority} 反馈问题明细（${items.length}）</summary>${table(["问题ID","合并条数","进展","一级分类","二级分类","负责人","解决时间","问题描述"],rows,99)}</details>`;
   }).join("");
 }
 function unresolvedByCategoryTables(scopeKey){
@@ -319,9 +330,9 @@ function unresolvedByCategoryTables(scopeKey){
     const high=sorted.filter(r=>r.priority==="P0++"||r.priority==="P0").length;
     const tableRows=sorted.map(item=>[
       esc(item.priority),esc(item.secondary),esc(item.owner),item.source_count,
-      esc(String(item.description||"").replace(/\s+/g," ").trim()),esc(item.status)
+      esc(resolvedAt(item)||"—"),esc(String(item.description||"").replace(/\s+/g," ").trim()),esc(item.status)
     ]);
-    return `<details class="detail-group"><summary>${esc(category)} · 未解决 ${sorted.length}（高优 ${high}）</summary>${table(["优先级","二级分类","负责人","合并","问题描述","进展"],tableRows,99)}</details>`;
+    return `<details class="detail-group"><summary>${esc(category)} · 未解决 ${sorted.length}（高优 ${high}）</summary>${table(["优先级","二级分类","负责人","合并","解决时间","问题描述","进展"],tableRows,99)}</details>`;
   }).join("");
   return `<div class="section-sub" style="margin-top:14px">${esc(scopeKey)} · 未解决明细按一级分类（共 ${details.length} 条）</div>${blocks}`;
 }

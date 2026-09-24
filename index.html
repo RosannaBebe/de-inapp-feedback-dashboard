@@ -20,6 +20,7 @@
 table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;font-size:12px}th{background:#f6f7f9;color:#586174;text-align:left;font-weight:650;padding:10px}td{padding:9px 10px;border-top:1px solid var(--border)}tbody tr:nth-child(even){background:#fafbfc}.right{text-align:right}.center{text-align:center}.wide{overflow-x:auto}
 .detail-group{background:#fff;border:1px solid var(--border);border-radius:10px;margin:9px 0;overflow:hidden}.detail-group summary{cursor:pointer;padding:11px 13px;font-weight:650}.detail-group[open] summary{border-bottom:1px solid var(--border)}.detail-group .wide{padding:12px}
 .status-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:14px}.weekly svg{width:100%;height:auto;overflow:visible}.axis{font-size:10px;fill:#7b8494}.line-created{fill:none;stroke:var(--blue);stroke-width:3}.line-resolved{fill:none;stroke:var(--green);stroke-width:3}.line-dot-created{fill:var(--blue)}.line-dot-resolved{fill:var(--green)}.weekly-hover>rect{cursor:crosshair}.weekly-tooltip{opacity:0;pointer-events:none;transition:opacity .12s ease}.weekly-hover:hover .weekly-tooltip,.weekly-hover:focus .weekly-tooltip{opacity:1}.weekly-tooltip rect{fill:#182033;stroke:#fff;stroke-width:1;rx:7}.weekly-tooltip text{fill:#fff;font-size:11px}.line-legend{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:8px}.line-key{display:inline-block;width:18px;height:3px;margin-right:6px;vertical-align:middle}
+.browse-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px}.browse-head .section-sub{margin:0}.toggle-btn{border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-weight:650;color:var(--text);white-space:nowrap}.toggle-btn:hover{border-color:var(--blue);color:var(--blue)}
 .footer{border-top:1px solid var(--border);padding-top:14px;color:var(--muted);font-size:11px;margin-top:28px}.hidden{display:none}
 @media(max-width:980px){.tax-grid,.kpis,.overall-kpis{grid-template-columns:repeat(2,1fr)}.grid-2,.grid-even,.status-grid{grid-template-columns:1fr}.priority-guide{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.page{padding:14px}.header{display:block}.meta{text-align:left;margin-top:10px}.tax-grid,.kpis,.overall-kpis,.priority-guide{grid-template-columns:1fr}.bar-row{grid-template-columns:90px 1fr 40px}}
@@ -71,6 +72,7 @@ let browseWeek=latestWeekWithCreated();
 let browseMode="created";
 let browseCat="全部";
 let browseSec="全部";
+let browseOpen=false;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const pct=(n,t)=>t?`${Math.round(n/t*1000)/10}%`:"0%";
 const value=(arr,label)=>arr.find(x=>x.label===label)?.value||0;
@@ -127,6 +129,7 @@ function renderTaxonomy(){
       event.stopPropagation();
       browseCat=el.dataset.browseCat||"全部";
       browseSec=el.dataset.browseSec||"全部";
+      browseOpen=true;
       renderBrowseToolbar();
       renderBrowseTable();
       document.getElementById("browseTable")?.scrollIntoView({behavior:"smooth",block:"start"});
@@ -234,12 +237,16 @@ function renderBrowseTable(){
   const emptyHint=browseWeek===LAST_WEEK&&created===0&&browseMode==="created"
     ?`<div class="muted" style="margin-bottom:8px">本周暂无新增。上一周「${WEEK_LABELS[WEEK_LABELS.length-2]||""}」可在顶部周次里切换查看。</div>`:"";
   host.innerHTML=`
-    <div class="section-sub">${esc(scope)} · ${esc(weekText)} · ${modeLabel} ${rows.length} 条（该周新增 ${created} · 该周解决 ${resolved}）</div>
+    <div class="browse-head">
+      <div class="section-sub">${esc(scope)} · ${esc(weekText)} · ${modeLabel} ${rows.length} 条（该周新增 ${created} · 该周解决 ${resolved}）</div>
+      <button type="button" class="toggle-btn" id="browseToggle">${browseOpen?"【收起】":"【展开】"}</button>
+    </div>
     ${emptyHint}
-    ${rows.length?table(["优先级","进展","一级分类","二级分类","负责人",dateHeader,"问题描述"],rows.map(item=>[
+    <div id="browseBody" class="${browseOpen?"":"hidden"}">${rows.length?table(["优先级","进展","一级分类","二级分类","负责人",dateHeader,"问题描述"],rows.map(item=>[
       esc(item.priority),esc(item.status),esc(item.category),esc(item.secondary),esc(item.owner),
       esc(browseMode==="created"?item.created||"—":item.resolved||"—"),esc(item.description)
-    ]),99):`<div class="muted">当前筛选没有匹配记录。可换一周、改成「周解决」，或清空分类。</div>`}`;
+    ]),99):`<div class="muted">当前筛选没有匹配记录。可换一周、改成「周解决」，或清空分类。</div>`}</div>`;
+  document.getElementById("browseToggle").onclick=()=>{browseOpen=!browseOpen;renderBrowseTable()};
 }
 function bindWeeklyClicks(){
   document.querySelectorAll("[data-week]").forEach(node=>{
